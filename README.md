@@ -15,18 +15,18 @@ DeepL や Microsoft Translator の代わりに LLM API（OpenAI / Anthropic / Go
 
 ```bash
 # インストール
-npm install
+pnpm install
 
 # APIキーを設定
 cp .env.example .env
 # .env を編集して LLM_API_KEY を設定
 
 # 開発モードで起動
-npm run dev
+pnpm dev
 
 # または、ビルドして起動
-npm run build
-npm start
+pnpm build
+pnpm start
 ```
 
 サーバーが `http://localhost:8080` で起動します。わんコメの翻訳連携先をこの URL に設定してください。
@@ -94,11 +94,51 @@ logLevel: info
 
 ### デフォルトモデル
 
-| プロバイダー | デフォルトモデル | 参考コスト (入力/出力) |
-|---|---|---|
-| OpenAI | `gpt-4.1-nano` | $0.10 / $0.40 per 1M tokens |
-| Anthropic | `claude-haiku-4-5` | $1.00 / $5.00 per 1M tokens |
-| Google | `gemini-2.5-flash-lite` | $0.10 / $0.40 per 1M tokens |
+各プロバイダーで最もコスパの良いモデルをデフォルトに設定しています。
+
+| プロバイダー | デフォルトモデル | 入力 $/1M tokens | 出力 $/1M tokens |
+|---|---|---|---|
+| OpenAI | `gpt-4.1-nano` | $0.10 | $0.40 |
+| Anthropic | `claude-haiku-4-5` | $1.00 | $5.00 |
+| Google | `gemini-2.5-flash-lite` | $0.10 | $0.40 |
+
+### 翻訳向けモデル一覧
+
+配信コメント翻訳に適したモデルをコスト順に掲載しています（2026年3月時点）。
+
+#### OpenAI
+
+| モデル | 入力 $/1M | 出力 $/1M | 速度 | 備考 |
+|---|---|---|---|---|
+| **`gpt-4.1-nano`** | $0.10 | $0.40 | 最速 | **デフォルト** 最安・高速。翻訳に十分な品質 |
+| `gpt-4o-mini` | $0.15 | $0.60 | 非常に速い | 実績ある品質 |
+| `gpt-5.4-nano` | $0.20 | $1.25 | 非常に速い | 最新世代。nano より高品質 |
+| `gpt-4.1-mini` | $0.40 | $1.60 | 速い | 品質とコストのバランス型 |
+| `gpt-5-mini` | $0.25 | $2.00 | 速い | 品質重視なら選択肢 |
+
+#### Anthropic
+
+| モデル | 入力 $/1M | 出力 $/1M | 速度 | 備考 |
+|---|---|---|---|---|
+| **`claude-haiku-4-5`** | $1.00 | $5.00 | 最速 | **デフォルト** 多言語翻訳の品質が高い |
+| `claude-sonnet-4-6` | $3.00 | $15.00 | 速い | 高品質だがコスト高 |
+
+#### Google Gemini
+
+| モデル | 入力 $/1M | 出力 $/1M | 速度 | 備考 |
+|---|---|---|---|---|
+| **`gemini-2.5-flash-lite`** | $0.10 | $0.40 | 非常に速い | **デフォルト** 最安。無料枠あり |
+| `gemini-2.5-flash` | $0.30 | $2.50 | 速い | より高品質な Flash。無料枠あり |
+| `gemini-3.1-flash-lite-preview` | $0.25 | $1.50 | 非常に速い | 最新世代の Lite モデル |
+
+#### コスト目安
+
+忙しい配信（1時間あたり約10,000コメント翻訳）の場合:
+
+| モデル | 1時間あたりコスト |
+|---|---|
+| gpt-4.1-nano / gemini-2.5-flash-lite | 約 $0.09 |
+| claude-haiku-4-5 | 約 $1.00 |
 
 ## API
 
@@ -139,13 +179,13 @@ Trans-through と同一の HTTP API を提供します。
 
 ```bash
 # テスト実行
-npm test
+pnpm test
 
 # 開発サーバー起動（ホットリロード）
-npm run dev
+pnpm dev
 
 # ビルド
-npm run build
+pnpm build
 ```
 
 ## ライセンス
