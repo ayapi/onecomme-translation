@@ -1,0 +1,26 @@
+# 翻訳サーバー設定ファイル
+# このファイルを config.yaml にコピーして使用してください
+
+# サーバーポート番号 (デフォルト: 8080)
+# port: 8080
+
+# LLMプロバイダー: openai, anthropic, google (デフォルト: openai)
+# provider: openai
+
+# 使用するモデル名 (デフォルト: プロバイダーに応じた最安モデル)
+# OpenAI: gpt-4.1-nano
+# Anthropic: claude-haiku-4-5
+# Google: gemini-2.5-flash-lite
+# model: gpt-4.1-nano
+
+# LLM APIリクエストのタイムアウト(ミリ秒) (デフォルト: 30000)
+# timeout: 30000
+
+# ログレベル: debug, info, warn, error (デフォルト: info)
+# logLevel: info
+
+# システムプロンプト (デフォルト: 内蔵プロンプト)
+# カスタマイズする場合は以下のように記述:
+# systemPrompt: |
+#   You are a translation engine. Translate the given text to the specified target language.
+#   Output ONLY the translated text, nothing else.
