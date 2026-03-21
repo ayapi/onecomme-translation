@@ -106,6 +106,42 @@ describe('HTTP Handler', () => {
     expect(body.status).toBe('failure');
   });
 
+  it('nullのJSONボディに対してHTTP 400を返す', async () => {
+    const service = createMockTranslationService({
+      ok: true,
+      value: { translatedText: '', targetLang: '', skipped: false },
+    });
+    const app = createApp(service, logger);
+
+    const res = await app.request('/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: 'null',
+    });
+
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.status).toBe('failure');
+  });
+
+  it('配列のJSONボディに対してHTTP 400を返す', async () => {
+    const service = createMockTranslationService({
+      ok: true,
+      value: { translatedText: '', targetLang: '', skipped: false },
+    });
+    const app = createApp(service, logger);
+
+    const res = await app.request('/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: '[1, 2, 3]',
+    });
+
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.status).toBe('failure');
+  });
+
   it('スキップ時も成功レスポンスを返す', async () => {
     const service = createMockTranslationService({
       ok: true,

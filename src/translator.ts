@@ -1,4 +1,4 @@
-import { generateText } from 'ai';
+import { generateText, APICallError } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 import { createAnthropic } from '@ai-sdk/anthropic';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
@@ -122,9 +122,9 @@ export class TranslationService {
         };
       }
 
-      // Distinguish API errors (from LLM providers) from internal errors
-      if (this.isApiError(err)) {
-        this.logger.error(`API error: ${err.message}`);
+      // SDK API errors (e.g. 401, 429, 500 from providers)
+      if (err instanceof APICallError) {
+        this.logger.error(`API error: ${err.statusCode} - ${err.message}`);
         return {
           ok: false,
           error: { code: 'API_ERROR', message: err.message },
@@ -144,10 +144,5 @@ export class TranslationService {
       ok: false,
       error: { code: 'UNKNOWN', message },
     };
-  }
-
-  private isApiError(err: Error): boolean {
-    // Errors with status codes or from API responses are API errors
-    return 'status' in err || 'statusCode' in err || /\b[45]\d{2}\b/.test(err.message);
   }
 }

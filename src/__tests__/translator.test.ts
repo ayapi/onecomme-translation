@@ -3,10 +3,21 @@ import { TranslationService, getLangName } from '../translator.js';
 import type { AppConfig } from '../config.js';
 import { Logger } from '../logger.js';
 
-// Mock the AI SDK
-vi.mock('ai', () => ({
-  generateText: vi.fn(),
-}));
+// Mock the AI SDK - APICallError class defined inline to avoid hoisting issues
+vi.mock('ai', () => {
+  class APICallError extends Error {
+    statusCode: number;
+    constructor(message: string, statusCode: number) {
+      super(message);
+      this.name = 'AI_APICallError';
+      this.statusCode = statusCode;
+    }
+  }
+  return {
+    generateText: vi.fn(),
+    APICallError,
+  };
+});
 
 vi.mock('@ai-sdk/openai', () => ({
   createOpenAI: vi.fn(() => vi.fn(() => 'mock-model')),
@@ -20,9 +31,10 @@ vi.mock('@ai-sdk/google', () => ({
   createGoogleGenerativeAI: vi.fn(() => vi.fn(() => 'mock-model')),
 }));
 
-import { generateText } from 'ai';
+import { generateText, APICallError } from 'ai';
 
 const mockGenerateText = vi.mocked(generateText);
+const MockAPICallError = APICallError as unknown as new (message: string, statusCode: number) => Error;
 
 function createTestConfig(overrides?: Partial<AppConfig>): AppConfig {
   return {
@@ -106,14 +118,24 @@ describe('TranslationService', () => {
     }
   });
 
-  it('APIエラー時にAPI_ERRORエラーが返却される', async () => {
-    mockGenerateText.mockRejectedValue(new Error('401 Unauthorized'));
+  it('APICallError時にAPI_ERRORエラーが返却される', async () => {
+    mockGenerateText.mockRejectedValue(new MockAPICallError('Unauthorized', 401));
 
     const result = await service.translate('test', 'ja');
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.error.code).toBe('API_ERROR');
-      expect(result.error.message).toContain('401');
+      expect(result.error.message).toContain('Unauthorized');
+    }
+  });
+
+  it('通常のErrorはAPIエラーではなくUNKNOWNになる', async () => {
+    mockGenerateText.mockRejectedValue(new Error('401 Unauthorized'));
+
+    const result = await service.translate('test', 'ja');
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error.code).toBe('UNKNOWN');
     }
   });
 
