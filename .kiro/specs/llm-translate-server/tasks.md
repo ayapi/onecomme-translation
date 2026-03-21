@@ -1,7 +1,7 @@
 # Implementation Plan
 
-- [ ] 1. プロジェクト初期化とビルド環境構築
-- [ ] 1.1 Node.jsプロジェクトを作成し、TypeScript・ESM環境をセットアップする
+- [x] 1. プロジェクト初期化とビルド環境構築
+- [x] 1.1 Node.jsプロジェクトを作成し、TypeScript・ESM環境をセットアップする
   - package.jsonを作成し、`type: "module"` を設定する
   - TypeScript設定ファイルで`strict: true`、ESMモジュール出力を設定する
   - 必要な依存パッケージをインストールする: hono, @hono/node-server, ai, @ai-sdk/openai, @ai-sdk/anthropic, @ai-sdk/google, js-yaml, dotenv
