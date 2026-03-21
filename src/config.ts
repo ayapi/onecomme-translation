@@ -45,7 +45,12 @@ export function loadConfig(configPath?: string): AppConfig {
     fileConfig = (yaml.load(raw) as YamlConfig) ?? {};
   }
 
-  const provider = (process.env['LLM_PROVIDER'] ?? fileConfig.provider ?? 'openai') as AppConfig['provider'];
+  const VALID_PROVIDERS = ['openai', 'anthropic', 'google'] as const;
+  const rawProvider = process.env['LLM_PROVIDER'] ?? fileConfig.provider ?? 'openai';
+  if (!VALID_PROVIDERS.includes(rawProvider as typeof VALID_PROVIDERS[number])) {
+    throw new Error(`Invalid provider: "${rawProvider}". Must be one of: ${VALID_PROVIDERS.join(', ')}`);
+  }
+  const provider = rawProvider as AppConfig['provider'];
 
   const apiKey =
     process.env['LLM_API_KEY'] ??
@@ -65,7 +70,7 @@ export function loadConfig(configPath?: string): AppConfig {
     apiKey,
     timeout: toNumber(process.env['LLM_TIMEOUT']) ?? fileConfig.timeout ?? 30000,
     systemPrompt: fileConfig.systemPrompt ?? DEFAULT_SYSTEM_PROMPT,
-    logLevel: (process.env['LOG_LEVEL'] ?? fileConfig.logLevel ?? 'info') as LogLevel,
+    logLevel: validateLogLevel(process.env['LOG_LEVEL'] ?? fileConfig.logLevel ?? 'info'),
   };
 }
 
@@ -83,4 +88,13 @@ function toNumber(value: string | undefined): number | undefined {
   if (value === undefined) return undefined;
   const n = Number(value);
   return Number.isNaN(n) ? undefined : n;
+}
+
+const VALID_LOG_LEVELS: readonly string[] = ['debug', 'info', 'warn', 'error'];
+
+function validateLogLevel(value: string): LogLevel {
+  if (!VALID_LOG_LEVELS.includes(value)) {
+    throw new Error(`Invalid log level: "${value}". Must be one of: ${VALID_LOG_LEVELS.join(', ')}`);
+  }
+  return value as LogLevel;
 }

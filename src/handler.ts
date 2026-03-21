@@ -19,8 +19,8 @@ export function createApp(translationService: TranslationService, logger: Logger
       return c.json({ lang: '', text: '', status: 'failure' }, 400);
     }
 
-    if (!body.lang || !body.text) {
-      logger.warn('Missing required fields: lang or text');
+    if (typeof body.lang !== 'string' || typeof body.text !== 'string' || !body.lang || !body.text) {
+      logger.warn('Missing or invalid required fields: lang and text must be non-empty strings');
       return c.json({ lang: '', text: '', status: 'failure' }, 400);
     }
 

@@ -126,4 +126,14 @@ describe('TranslationService', () => {
       expect(result.error.code).toBe('UNKNOWN');
     }
   });
+
+  it('内部エラー（非APIエラー）はUNKNOWNに分類される', async () => {
+    mockGenerateText.mockRejectedValue(new Error('Cannot read properties of undefined'));
+
+    const result = await service.translate('test', 'ja');
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error.code).toBe('UNKNOWN');
+    }
+  });
 });

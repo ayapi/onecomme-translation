@@ -122,10 +122,19 @@ export class TranslationService {
         };
       }
 
-      this.logger.error(`API error: ${err.message}`);
+      // Distinguish API errors (from LLM providers) from internal errors
+      if (this.isApiError(err)) {
+        this.logger.error(`API error: ${err.message}`);
+        return {
+          ok: false,
+          error: { code: 'API_ERROR', message: err.message },
+        };
+      }
+
+      this.logger.error(`Unknown error: ${err.message}`);
       return {
         ok: false,
-        error: { code: 'API_ERROR', message: err.message },
+        error: { code: 'UNKNOWN', message: err.message },
       };
     }
 
@@ -135,5 +144,10 @@ export class TranslationService {
       ok: false,
       error: { code: 'UNKNOWN', message },
     };
+  }
+
+  private isApiError(err: Error): boolean {
+    // Errors with status codes or from API responses are API errors
+    return 'status' in err || 'statusCode' in err || /\b[45]\d{2}\b/.test(err.message);
   }
 }

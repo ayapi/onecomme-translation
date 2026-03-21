@@ -118,4 +118,14 @@ systemPrompt: "Custom prompt"
     const config = loadConfig(TEST_CONFIG_PATH);
     expect(config.systemPrompt).toBe('Custom prompt');
   });
+
+  it('不正なプロバイダー名でエラーをスローする', () => {
+    process.env['LLM_PROVIDER'] = 'invalid';
+    expect(() => loadConfig(TEST_CONFIG_PATH)).toThrow('Invalid provider: "invalid"');
+  });
+
+  it('不正なログレベルでエラーをスローする', () => {
+    process.env['LOG_LEVEL'] = 'verbose';
+    expect(() => loadConfig(TEST_CONFIG_PATH)).toThrow('Invalid log level: "verbose"');
+  });
 });
