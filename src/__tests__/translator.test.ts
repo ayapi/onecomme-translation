@@ -106,6 +106,32 @@ describe('TranslationService', () => {
     }
   });
 
+  it('[SAME_LANG]が末尾や括弧内にあってもスキップされる', async () => {
+    mockGenerateText.mockResolvedValue({
+      text: 'こんにちは [SAME_LANG]',
+    } as any);
+
+    const result = await service.translate('こんにちは', 'ja');
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value.translatedText).toBe('こんにちは');
+      expect(result.value.skipped).toBe(true);
+    }
+  });
+
+  it('翻訳不能なテキストは空文字列が返される', async () => {
+    mockGenerateText.mockResolvedValue({
+      text: '[UNTRANSLATABLE]',
+    } as any);
+
+    const result = await service.translate('Ayapi tui-p-an.', 'ja');
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value.translatedText).toBe('');
+      expect(result.value.skipped).toBe(true);
+    }
+  });
+
   it('タイムアウト時にTIMEOUTエラーが返却される', async () => {
     const abortError = new Error('The operation was aborted');
     abortError.name = 'AbortError';

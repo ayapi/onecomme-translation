@@ -65,12 +65,24 @@ export class TranslationService {
 
         const trimmed = result.trim();
 
-        if (trimmed.startsWith('[SAME_LANG]')) {
+        if (trimmed.includes('[SAME_LANG]')) {
           this.logger.debug(`Same language detected, skipping: ${targetLang}`);
           return {
             ok: true,
             value: {
               translatedText: text,
+              targetLang,
+              skipped: true,
+            },
+          };
+        }
+
+        if (trimmed.includes('[UNTRANSLATABLE]')) {
+          this.logger.debug(`Untranslatable text detected, returning empty`);
+          return {
+            ok: true,
+            value: {
+              translatedText: '',
               targetLang,
               skipped: true,
             },
