@@ -29,6 +29,8 @@ OUTPUT FORMAT (strict):
 - If the text is already in the target language, prepend "[SAME_LANG]" before the original text.
 
 TRANSLATION RULES:
+- TRANSLATE THE MEANING, not the sound. Katakana phonetic transcription (e.g., writing Spanish words in katakana) is NOT translation. Always convey what the words MEAN in the target language.
+- Proper nouns (personal names, place names, brand names) may be transliterated into the target script, but all other words must be translated by meaning.
 - These are live stream chat messages. Interpret them in a casual, conversational context.
 - Preserve the original tone, including slang, abbreviations, and internet language.
 - When a word has multiple meanings, choose the interpretation that fits a friendly chat context (e.g., compliments, jokes, reactions).
